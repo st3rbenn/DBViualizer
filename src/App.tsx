@@ -1,21 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { BsFillSuitHeartFill } from 'react-icons/bs';
+import React, { MouseEvent } from 'react';
+import { Button, Grid } from '@mantine/core';
+import { get, post } from './Service/apiService';
 
 function App() {
+  const handleClick = async (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    const res = await post('DB/db-connect', {
+      host: 'localhost',
+      port: 8889,
+      user: 'root',
+      password: 'root',
+    });
+    console.log(res);
+  };
+
+  const handleClick2 = async (event: MouseEvent<HTMLElement>) => {
+    event.preventDefault();
+    const res = await get('DB/databases');
+    console.log(res);
+  };
+
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>
-          Template Typescript using esLint and Prettier Made with {<BsFillSuitHeartFill color='red' />} by{' '}
-          <a href='https://www.github.com/st3rbenn' style={{ textDecoration: 'none' }}>
-            St3rbenn
-          </a>
-        </p>
-      </header>
-    </div>
+    <Grid justify='center' align='center'>
+      <Grid.Col span={4}>
+        <Button onClick={(event) => handleClick(event)}>Connect MySQL</Button>
+      </Grid.Col>
+      <Grid.Col span={4}>
+        <Button onClick={(event) => handleClick2(event)}>Show Database</Button>
+      </Grid.Col>
+    </Grid>
   );
 }
 

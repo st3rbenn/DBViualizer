@@ -1,17 +1,41 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
+import ReactDOM from 'react-dom';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { MantineProvider, MantineTheme } from '@mantine/core';
 
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+const theme: Partial<MantineTheme> = {
+  colorScheme: 'dark',
+  components: {
+    Button: {
+      styles: {
+        root: {
+          backgroundColor: '#144272',
+          ':hover': {
+            backgroundColor: '#0A2647',
+          },
+        },
+      },
+    },
+  },
+};
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals(console.log);
+const Index = () => {
+  return (
+    <React.StrictMode>
+      <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
+        <App />
+      </MantineProvider>
+    </React.StrictMode>
+  );
+};
+
+export default Index;
+
+// ReactDOM.render(
+//   <React.StrictMode>
+//     <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
+//       <App />
+//     </MantineProvider>
+//   </React.StrictMode>,
+//   document.getElementById('root'),
+// );
