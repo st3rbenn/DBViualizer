@@ -1,9 +1,10 @@
 import express, { Express, Request, Response } from 'express';
-import { connectToDatabase, retrieveAllDatabase } from '../controller/Database.controller';
+import { connectToDatabase, retrieveAllDatabase, disconnectDatabase } from '../controller/Database.controller';
 
 const DatabaseRouter: Express = express();
 
 DatabaseRouter.post('/db-connect', connectToDatabase);
 DatabaseRouter.get('/databases', retrieveAllDatabase);
+DatabaseRouter.get('/disconnect', disconnectDatabase);
 
 export default DatabaseRouter;

@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2015"],
     "jsx": "react",
-    "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
     "target": "ES5",
     "module": "CommonJS",
     "moduleResolution": "node",
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
     "esModuleInterop": true,
     "allowJs": true,
-    "lib": ["DOM", "DOM.Iterable", "ES2015"],
     "sourceMap": true
   },
   "ts-node": {
@@ -16,6 +17,6 @@
       "module": "CommonJS"
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/*.ts", "src/*.tsx", "server/server.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/*.ts", "src/*.tsx", "server/server.tsx", "module.d.ts"],
   "exclude": ["node_modules"]
 }

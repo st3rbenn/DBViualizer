@@ -30,12 +30,3 @@ const Index = () => {
 };
 
 export default Index;
-
-// ReactDOM.render(
-//   <React.StrictMode>
-//     <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
-//       <App />
-//     </MantineProvider>
-//   </React.StrictMode>,
-//   document.getElementById('root'),
-// );

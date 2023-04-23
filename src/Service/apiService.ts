@@ -1,4 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
+import { notifications } from '@mantine/notifications';
+
+interface IResponse {
+  message: string;
+  error: string;
+  result: any;
+}
 
 const apiClient = axios.create({
   baseURL: 'http://localhost:3000/api/v/0.1.0/',
@@ -7,8 +14,16 @@ const apiClient = axios.create({
   },
 });
 
-export async function get<T>(endpoint: string): Promise<T> {
+export async function get<T extends IResponse>(endpoint: string): Promise<T> {
   const response: AxiosResponse<T> = await apiClient.get(endpoint);
+  console.log('TESTIONS');
+  if (response.status !== 200) {
+    console.log('error');
+    notifications.show({
+      title: response.data.message,
+      message: response.data.error,
+    });
+  }
   return response.data;
 }
 

@@ -9,5 +9,6 @@ module.exports = merge(common, {
   entry: './server/server.tsx',
   output: {
     filename: 'server.js',
+    path: __dirname + '/dist',
   },
 });
