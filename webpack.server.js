@@ -1,14 +1,21 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
 const nodeExternals = require('webpack-node-externals');
+const common = require('./webpack.common.js');
 
 module.exports = merge(common, {
   mode: 'development',
-  target: 'node',
-  externals: [nodeExternals()],
   entry: './server/server.tsx',
   output: {
     filename: 'server.js',
-    path: __dirname + '/dist',
+  },
+  target: 'node',
+  externals: [nodeExternals()],
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['ignore-loader'],
+      },
+    ],
   },
 });

@@ -123,7 +123,6 @@ export class DBConnection {
 
   public async getAllDatabaseNames(): Promise<string[]> {
     const [rows] = await DBConnection.pool.execute('SHOW DATABASES');
-    console.log(rows);
     return rows.map((row: RowDataPacket) => row.Database);
   }
 

@@ -5,10 +5,6 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
   },
-  devServer: {
-    hot: true,
-    open: false,
-  },
   module: {
     rules: [
       {

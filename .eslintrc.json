@@ -21,6 +21,7 @@
   },
   "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
   "rules": {
+    "extends": "eslint:recommended",
     "react/react-in-jsx-scope": "off",
     "camelcase": "error",
     "quotes": ["error", "single"],
@@ -28,12 +29,23 @@
     "no-trailing-spaces": "error",
     "no-unused-vars": "warn",
     "no-duplicate-imports": "error",
-    "no-empty-function": "error",
-		"react/no-unescaped-entities": 0
+    "no-empty-function": "warn",
+		"react/no-unescaped-entities": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "@typescript-eslint/ban-ts-ignore": "warn",
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
   },
   "settings": {
     "import/resolver": {
-      "typescript": {}
+      "typescript": {
+        "alwaysTryTypes": true
+      }
     },
     "react": {
       "version": "detect"

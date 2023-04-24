@@ -15,13 +15,12 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
 
     if (isInstanceExist) {
       return res.status(406).json({
-        message: 'Already connected to database 🚧',
+        message: 'error connecting to database ⛔️',
+        error: 'Already connected to database 🚧'
       });
     }
 
     const dbInstance = DBConnection.createInstance(dbCredentials);
-
-    console.log('ICICIIIIII');
 
     await dbInstance.connect();
 
@@ -29,7 +28,6 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
       message: 'Connected to MySQL database ✅',
     });
   } catch (e) {
-    console.log(e);
     res.status(500).json({
       message: 'error connecting to database',
       error: e,

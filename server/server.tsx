@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.resolve(__dirname, 'dist')));
 
-//cors middleware
+// CORS middleware
 app.use((req, res, next) => {
-  //Enabling CORS
+  // Enabling CORS
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
   res.header(
@@ -31,8 +31,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/v/0.1.0', Router);
 
 app.get('*', (req, res) => {
-  const appHtml = renderToString(<App />); // Remplacez "App" par le nom de votre composant principal
-  const indexFile = path.resolve('./dist/index.html'); // Assurez-vous que le chemin d'accès correspond à l'emplacement du fichier index.html généré
+  const appHtml = renderToString(<App />);
+  const indexFile = path.resolve('./dist/index.html');
 
   fs.readFile(indexFile, 'utf8', (err, data) => {
     if (err) {

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2015"],
+    "lib": ["dom", "es6", "es2017", "esnext"],
     "jsx": "react",
     "target": "ES5",
     "module": "CommonJS",
@@ -10,13 +10,13 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "allowJs": true,
-    "sourceMap": true
+    "sourceMap": false
   },
   "ts-node": {
     "compilerOptions": {
       "module": "CommonJS"
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/*.ts", "src/*.tsx", "server/server.tsx", "module.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/*.ts", "src/*.tsx", "server/server.tsx", "module.d.ts", "typings.d.ts"],
   "exclude": ["node_modules"]
 }

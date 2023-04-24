@@ -1,3 +1,5 @@
+import {Tuple, DefaultMantineColor} from '@mantine/core';
+
 declare namespace NodeJS {
   interface Module {
     hot?: {
@@ -5,4 +7,8 @@ declare namespace NodeJS {
       dispose(callback: () => void): void;
     };
   }
+}
+
+declare interface ExtendableEvent extends Event {
+  waitUntil(fn: Promise<any>): void;
 }
