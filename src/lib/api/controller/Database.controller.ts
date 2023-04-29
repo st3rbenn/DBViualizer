@@ -5,34 +5,32 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
   const { host, port, user, password } = req.body;
   try {
     const dbCredentials = {
-      host: host,
-      port: port,
-      user: user,
-      password: password,
+      host,
+      port,
+      user,
+      password,
     };
+    console.log(dbCredentials)
 
     const isInstanceExist = DBConnection.instance;
 
     if (isInstanceExist) {
       return res.status(406).json({
-        message: 'error connecting to database ⛔️',
-        error: 'Already connected to database 🚧'
+        message: 'warning ⚠️',
+        error: 'Already connected to database 🚧',
       });
     }
 
-    const dbInstance = DBConnection.createInstance(dbCredentials);
-
-    await dbInstance.connect();
+    await DBConnection.createInstance(dbCredentials).connect();
 
     return res.status(200).json({
       message: 'Connected to MySQL database ✅',
     });
   } catch (e) {
-    res.status(500).json({
+    return res.status(500).json({
       message: 'error connecting to database',
-      error: e,
+      error: 'Something went wrong, please try again later',
     });
-    next();
   }
 };
 
@@ -52,13 +50,12 @@ export const retrieveAllDatabase = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       message: 'Retrieved all databases ✅',
-      result: result,
+      data: result,
     });
   } catch (e) {
-    console.log(e);
     return res.status(500).json({
       message: 'error retrieving all databases',
-      error: e,
+      error: 'Something went wrong, please try again later',
     });
   }
 };
@@ -83,7 +80,7 @@ export const disconnectDatabase = async (req: Request, res: Response) => {
     console.log(e);
     return res.status(500).json({
       message: 'error while disconnect database',
-      error: e,
+      error: 'Something went wrong, please try again later',
     });
   }
 };

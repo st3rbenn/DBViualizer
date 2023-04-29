@@ -1,32 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Code, Group, Navbar, Title, createStyles } from '@mantine/core';
+import { Button, Code, Flex, Grid, Group, Navbar, Title, createStyles, rem } from '@mantine/core';
+import { Box } from '@mantine/core';
+import { get, post } from '../../Service/apiService';
 
 type Props = {};
 
 function SideLeftMenu(props: Props) {
-  const {} = props;
   const { classes } = useStyles();
+  const [data, setData] = useState<any>(null);
+
+  const handleConnect = async () => {
+    await post('DB/db-connect', {
+      host: 'localhost',
+      port: 8889,
+      user: 'root',
+      password: 'root',
+    });
+  };
+
+  const handleConnect2 = async () => {
+    const res = await get('DB/databases');
+    setData(res);
+  };
 
   return (
-    <Navbar
-      height="100vh"
-      width={{ sm: 300 }}
-      p="md"
-      className={classes.navbar}
-    >
+    <Navbar height='100vh' width={{ sm: 250 }} p='md' className={classes.navbar}>
       <Navbar.Section className={classes.header}>
-        <Group style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
-          <Title size={25}>
-            SQLNest
-          </Title>
+        <Group
+          position='apart'
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Title size={25}>SQLNest</Title>
           <Code className={classes.code}>v0.1.0</Code>
         </Group>
+      </Navbar.Section>
+
+      <Navbar.Section>
+        
       </Navbar.Section>
     </Navbar>
   );
@@ -43,9 +58,11 @@ const useStyles = createStyles((theme) => ({
     marginLeft: `calc(${theme.spacing.md} * -1)`,
     marginRight: `calc(${theme.spacing.md} * -1)`,
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
-    borderBottom: `1px solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.colors.gray[2]
-    }`
+    paddingBottom: theme.spacing.md,
+    marginBottom: `calc(${theme.spacing.md} * 1.5)`,
+    borderBottom: `${rem(1)} solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
+    }`,
   },
   code: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[3] : theme.black,
@@ -54,9 +71,14 @@ const useStyles = createStyles((theme) => ({
     alignItems: 'center',
     display: 'inline-flex',
     borderRadius: theme.radius.sm,
-    fontSize: theme.fontSizes.xs,
+    fontSize: '.7rem',
     marginTop: '.2rem',
-  }
+    borderWidth: 1,
+    borderStyle: 'solid',
+    borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.black,
+    width: 'fit-content',
+    height: 'fit-content',
+  },
 }));
 
 export default SideLeftMenu;

@@ -1,5 +1,4 @@
-import { PoolConnection, PoolOptions, Connection } from 'mysql2';
-import { Query, RowDataPacket, createPool } from 'mysql2/promise';
+import { RowDataPacket, createPool, Pool, Connection, PoolConnection } from 'mysql2/promise';
 
 interface IDBConnectionCredentials {
   host: string;
@@ -10,29 +9,13 @@ interface IDBConnectionCredentials {
 
 export class DBConnection {
   private static _instance: DBConnection;
-  private static _pool: any;
-  private static _connection: PoolConnection;
+  private static _pool: Pool | null = null;
+  private static _connection: PoolConnection | null = null;
 
   private static _host: string;
   private static _user: string;
   private static _password: string;
   private static _port: number;
-
-  private constructor(credentials: IDBConnectionCredentials) {
-    DBConnection.host = credentials.host;
-    DBConnection.user = credentials.user;
-    DBConnection.password = credentials.password;
-    DBConnection.port = credentials.port;
-    DBConnection.pool = createPool({
-      host: DBConnection.host,
-      user: DBConnection.user,
-      password: DBConnection.password,
-      port: DBConnection.port,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-    });
-  }
 
   public static get instance(): DBConnection {
     return this._instance;
@@ -42,19 +25,19 @@ export class DBConnection {
     this._instance = value;
   }
 
-  public static get pool(): any {
+  public static get pool(): Pool | null {
     return this._pool;
   }
 
-  private static set pool(value: any) {
+  private static set pool(value: Pool | null) {
     this._pool = value;
   }
 
-  public static get connection(): PoolConnection {
+  public static get connection(): PoolConnection | null {
     return this._connection;
   }
 
-  private static set connection(value: PoolConnection) {
+  private static set connection(value: PoolConnection | null) {
     this._connection = value;
   }
 
@@ -90,25 +73,55 @@ export class DBConnection {
     this._port = value;
   }
 
-  public static createInstance(credentials: IDBConnectionCredentials) {
-    if (!credentials) {
-      return null;
-    }
+  private constructor(
+    credentials: IDBConnectionCredentials = {
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      port: 3306,
+    },
+  ) {
+    DBConnection.host = credentials.host;
+    DBConnection.user = credentials.user;
+    DBConnection.password = credentials.password;
+    DBConnection.port = credentials.port;
+  }
 
+  public static createInstance(credentials: IDBConnectionCredentials) {
     if (!DBConnection.instance) {
+      console.log('Creating new instance...');
       DBConnection.instance = new DBConnection(credentials);
+      DBConnection.pool = createPool({
+        host: DBConnection.host,
+        user: DBConnection.user,
+        password: DBConnection.password,
+        port: DBConnection.port,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+      });
+
+      console.log('Instance created ✅');
     }
     return DBConnection.instance;
   }
 
-  public async connect(): Promise<any> {
-    console.log('Connecting to database... 😴');
-    DBConnection.connection = await DBConnection.pool.getConnection();
-    console.log('Connected to database 😎');
+  public async connect(): Promise<void> {
+    try {
+      console.log('Connecting to database... 😴');
+      if (!DBConnection.pool) {
+        throw new Error('Pool is not initialized');
+      }
+      await DBConnection.pool.getConnection();
+      console.log('Connected to database 😎');
+    } catch (e) {
+      console.log('Something went wrong while connecting to database', e);
+      throw new Error('Something went wrong while connecting to database', e);
+    }
   }
 
   public async closeConnection() {
-    DBConnection.connection.release();
+    DBConnection.connection.destroy();
   }
 
   public async closePool() {
@@ -117,13 +130,27 @@ export class DBConnection {
   }
 
   public async executeQuery(query: string, params?: any[]): Promise<any> {
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
     const [rows] = await DBConnection.connection.execute(query, params);
     return rows;
   }
 
   public async getAllDatabaseNames(): Promise<string[]> {
-    const [rows] = await DBConnection.pool.execute('SHOW DATABASES');
-    return rows.map((row: RowDataPacket) => row.Database);
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
+    const [rows] = await DBConnection.connection.execute('SHOW DATABASES');
+    const databases: string[] = [];
+    if (Array.isArray(rows)) {
+      rows.forEach((row: any) => {
+        if ('Database' in row) {
+          databases.push(row.Database);
+        }
+      });
+    }
+    return databases;
   }
 
   public static checkIfInstanceExists(): boolean {

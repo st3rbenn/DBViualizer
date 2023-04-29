@@ -1,87 +1,87 @@
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { notifications } from '@mantine/notifications';
 import { RxCross2 } from 'react-icons/rx';
+import NotificationUtils from '../utils/notification.utils';
 
-interface IResponse {
-  message: string;
-  error: string;
-  result: any;
+interface IRequestResponse extends AxiosResponse {
+  readonly message: string;
+  readonly error: string;
+  readonly result: any;
 }
+
+interface IRequestError {
+  response: {
+    data: {
+      message: string;
+      error: string;
+    };
+  };
+}
+
+interface AxiosError {
+  config?: InternalAxiosRequestConfig;
+  code?: string;
+  request?: any;
+  response?: AxiosResponse;
+  isAxiosError: boolean;
+  status?: number;
+  toJSON: () => object;
+  cause?: Error;
+}
+
+type RequestError = IRequestError & AxiosError;
 
 const apiClient = axios.create({
   baseURL: '/api/v/0.1.0/',
   headers: {
     'Content-Type': 'application/json',
   },
-  //  transformResponse: [
-  //   (data) => {
-  //     const parsedData = JSON.parse(data);
-  //     if (parsedData.error) {
-  //       notifications.show({
-  //         title: parsedData.message,
-  //         message: parsedData.error,
-  //       });
-  //     }
-  //   }
-  // ],
 });
 
-export async function get<T extends IResponse>(endpoint: string): Promise<T> {
+export async function get<T extends IRequestResponse>(endpoint: string): Promise<T> {
   try {
     const response: AxiosResponse<T> = await apiClient.get(endpoint);
-    showSuccessMessage(response.data.message);
+    new NotificationUtils(response.data.message).showSuccessMessage();
     return response.data;
   } catch (e) {
-    showErrorMessage(e.response.data.message, e.response.data.error);
+    const error = e as RequestError;
+    new NotificationUtils(error?.response?.data?.message, error?.response?.data?.error).showErrorMessage();
+    return error.response.data;
   }
 }
 
-export async function post<T extends IResponse>(endpoint: string, data: any): Promise<T> {
+export async function post<T extends IRequestResponse>(endpoint: string, data: any): Promise<T> {
   try {
     const response: AxiosResponse<T> = await apiClient.post(endpoint, data);
-    showSuccessMessage(response.data.message);
+    new NotificationUtils(response.data.message).showSuccessMessage();
     return response.data;
   } catch (e) {
-    showErrorMessage(e.response.data.message, e.response.data.error);
+    const error = e as RequestError;
+    new NotificationUtils(error?.response?.data?.message, error?.response?.data?.error).showErrorMessage();
+    return error.response.data;
   }
 }
 
-export async function put<T extends IResponse>(endpoint: string, data: any): Promise<T> {
+export async function put<T extends IRequestResponse>(endpoint: string, data: any): Promise<T> {
   try {
     const response: AxiosResponse<T> = await apiClient.put(endpoint, data);
-    showSuccessMessage(response.data.message);
+    new NotificationUtils(response.data.message).showSuccessMessage();
     return response.data;
   } catch (e) {
-    showErrorMessage(e.response.data.message, e.response.data.error);
+    const error = e as RequestError;
+    new NotificationUtils(error?.response?.data?.message).showErrorMessage();
+    return error.response.data;
   }
 }
 
-export async function del<T extends IResponse>(endpoint: string): Promise<T> {
+export async function del<T extends IRequestResponse>(endpoint: string): Promise<T> {
   try {
     const response: AxiosResponse<T> = await apiClient.delete(endpoint);
-    showSuccessMessage(response.data.message);
+    new NotificationUtils(response.data.message).showSuccessMessage();
     return response.data;
   } catch (e) {
-    showErrorMessage(e.response.data.message, e.response.data.error);
+    const error = e as RequestError;
+    new NotificationUtils(error?.response?.data?.message).showErrorMessage();
+    return error.response.data;
   }
-}
-
-function showErrorMessage(message: string, error: string) {
-  notifications.show({
-    title: message,
-    message: error,
-    withBorder: true,
-    color: 'red',
-    radius: 'sm',
-  });
-}
-
-function showSuccessMessage(message: string, success?: string) {
-  notifications.show({
-    title: message,
-    message: success,
-    withBorder: true,
-    color: 'green',
-    radius: 'sm',
-  });
 }

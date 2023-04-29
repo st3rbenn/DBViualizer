@@ -10,9 +10,9 @@
     "build:server": "webpack --config webpack.server.js",
     "build": "yarn build:client && yarn build:server",
     "start": "node dist/server.js",
-    "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
+    "dev": "./start.sh",
     "dev:client": "webpack serve --config webpack.client.js",
-    "dev:server": "nodemon --watch src/lib/api --ext ts,tsx --exec \"tsc && node dist/server/server.js\""
+    "dev:server": "./run-server.sh"
   },
   "dependencies": {
     "@babel/core": "^7.21.4",

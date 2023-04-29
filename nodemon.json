@@ -1,0 +1,7 @@
+{
+  "watch": ["src/lib/api/**/*"],
+  "ext": "ts,tsx",
+  "exec": "./run-server.sh",
+  "legacyWatch": true,
+  "noPrefix": true
+}

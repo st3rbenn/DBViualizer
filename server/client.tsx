@@ -9,8 +9,9 @@ const renderApp = () => {
 };
 
 renderApp();
-
+//@ts-ignore
 if (module.hot) {
+  //@ts-ignore
   module.hot.accept('../src/App', () => {
     // Mettez à jour le chemin d'importation
     renderApp();

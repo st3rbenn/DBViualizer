@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express } from 'express';
 import { connectToDatabase, retrieveAllDatabase, disconnectDatabase } from '../controller/Database.controller';
 
 const DatabaseRouter: Express = express();

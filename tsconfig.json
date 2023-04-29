@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "DOM.Iterable", "esnext", "es6", "es2017",],
     "types": ["node"],
     "jsx": "react",
     "target": "ES5",
