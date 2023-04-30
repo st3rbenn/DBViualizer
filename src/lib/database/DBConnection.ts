@@ -129,7 +129,7 @@ export class DBConnection {
     DBConnection.instance = null;
   }
 
-  public async executeQuery(query: string, params?: any[]): Promise<any> {
+  public static async executeQuery(query: string, params?: any[]): Promise<any> {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
@@ -137,11 +137,21 @@ export class DBConnection {
     return rows;
   }
 
-  public async getAllDatabaseNames(): Promise<string[]> {
+  public static async executeMultipleQueries(queries: string[]): Promise<any> {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
-    const [rows] = await DBConnection.connection.execute('SHOW DATABASES');
+    console.log('Executing queries...');
+    console.log(queries);
+    const [rows] = await DBConnection.connection.query(queries.join(''));
+    return rows;
+  }
+
+  public async getAllDatabase(): Promise<string[]> {
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
+    const [rows] = await DBConnection.executeQuery('SHOW DATABASES;');
     const databases: string[] = [];
     if (Array.isArray(rows)) {
       rows.forEach((row: any) => {
@@ -151,6 +161,22 @@ export class DBConnection {
       });
     }
     return databases;
+  }
+
+  public async getAllTablesFromDatabase(databaseName: string): Promise<string[]> {
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
+    const [rows] = await DBConnection.executeQuery(`SHOW TABLES FROM ${databaseName};`);
+    const tables: string[] = [];
+    if (Array.isArray(rows)) {
+      rows.forEach((row: any) => {
+        if (`Tables_in_${databaseName}` in row) {
+          tables.push(row[`Tables_in_${databaseName}`]);
+        }
+      });
+    }
+    return tables;
   }
 
   public static checkIfInstanceExists(): boolean {
@@ -163,11 +189,18 @@ export class DBConnection {
     }
 
     const serverInfoQuery =
-      "SHOW GLOBAL VARIABLES WHERE Variable_name LIKE 'port' OR Variable_name LIKE 'default_storage_engine' OR Variable_name LIKE 'basedir' OR Variable_name LIKE 'character_set_server';";
+      'SELECT (SELECT @@global.port) AS port, (SELECT @@global.default_storage_engine) AS default_storage_engine, (SELECT @@global.basedir) AS basedir, (SELECT @@global.character_set_server) AS character_set_server, (SELECT SUBSTRING_INDEX(USER(), "@", -1)) AS ip, (SELECT user()) AS user;';
 
-    const getlocalIpServer = 'SELECT SUBSTRING_INDEX(USER(), "@", -1) AS ip;';    
+    const nodeVesion = process.version;
+    console.log('Node version: ', nodeVesion);
 
-    const getRootUser = 'SELECT user();';
-    const nodeVersion = process.versions.node;
+    const [res] = await DBConnection.executeQuery(serverInfoQuery);
+
+    const serverInfo = {
+      ...res,
+      nodeVesion,
+    };
+
+    return serverInfo;
   }
 }

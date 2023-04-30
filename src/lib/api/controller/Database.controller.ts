@@ -43,9 +43,7 @@ export const retrieveAllDatabase = async (req: Request, res: Response) => {
         error: 'no database instance found, please connect to database first 🙏',
       });
 
-    const query = 'SHOW DATABASES';
-
-    const result = await dbInstance.executeQuery(query);
+    const result = await dbInstance.getAllDatabase();
 
     return res.status(200).json({
       message: 'Retrieved all databases ✅',
@@ -70,11 +68,8 @@ export const getTablesFromDatabase = async (req: Request, res: Response) => {
       });
 
     const { database } = req.params;
-    console.log(database);
 
-    const query = `SHOW TABLES FROM ${database}`;
-
-    const result = await dbInstance.executeQuery(query);
+    const result = await dbInstance.getAllTablesFromDatabase(database);
 
     return res.status(200).json({
       message: 'Retrieved all tables ✅',
@@ -114,7 +109,6 @@ export const disconnectDatabase = async (req: Request, res: Response) => {
 };
 
 export const getServersInformations = async (req: Request, res: Response) => {
-  console.log("YOOOOOOO")
   try {
     const dbInstance = DBConnection.instance;
 
@@ -124,7 +118,7 @@ export const getServersInformations = async (req: Request, res: Response) => {
         error: 'no database instance found, please connect to database first 🙏',
       });
 
-      const getServerInformation = dbInstance.getServerInformations();
+      const getServerInformation = await dbInstance.getServerInformations();
 
       return res.status(200).json({
         message: 'all informations retrived ✅',
