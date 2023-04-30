@@ -10,7 +10,6 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
       user,
       password,
     };
-    console.log(dbCredentials)
 
     const isInstanceExist = DBConnection.instance;
 
@@ -24,7 +23,7 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
     await DBConnection.createInstance(dbCredentials).connect();
 
     return res.status(200).json({
-      message: 'Connected to MySQL database ✅',
+      message: 'Connected to MySQL',
     });
   } catch (e) {
     return res.status(500).json({
@@ -60,6 +59,35 @@ export const retrieveAllDatabase = async (req: Request, res: Response) => {
   }
 };
 
+export const getTablesFromDatabase = async (req: Request, res: Response) => {
+  try {
+    const dbInstance = DBConnection.instance;
+
+    if (!dbInstance)
+      return res.status(406).json({
+        message: 'error retrieving all tables ⛔️',
+        error: 'no database instance found, please connect to database first 🙏',
+      });
+
+    const { database } = req.params;
+    console.log(database);
+
+    const query = `SHOW TABLES FROM ${database}`;
+
+    const result = await dbInstance.executeQuery(query);
+
+    return res.status(200).json({
+      message: 'Retrieved all tables ✅',
+      data: result,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: 'error retrieving all tables',
+      error: 'Something went wrong, please try again later',
+    });
+  }
+};
+
 export const disconnectDatabase = async (req: Request, res: Response) => {
   try {
     const dbInstance = DBConnection.instance;
@@ -78,6 +106,33 @@ export const disconnectDatabase = async (req: Request, res: Response) => {
     });
   } catch (e) {
     console.log(e);
+    return res.status(500).json({
+      message: 'error while disconnect database',
+      error: 'Something went wrong, please try again later',
+    });
+  }
+};
+
+export const getServersInformations = async (req: Request, res: Response) => {
+  console.log("YOOOOOOO")
+  try {
+    const dbInstance = DBConnection.instance;
+
+    if (!dbInstance)
+      return res.status(406).json({
+        message: 'error disconnect to database ⛔️',
+        error: 'no database instance found, please connect to database first 🙏',
+      });
+
+      const getServerInformation = dbInstance.getServerInformations();
+
+      return res.status(200).json({
+        message: 'all informations retrived ✅',
+        data: getServerInformation
+      })
+    
+  } catch (e) {
+    console.log(e)
     return res.status(500).json({
       message: 'error while disconnect database',
       error: 'Something went wrong, please try again later',

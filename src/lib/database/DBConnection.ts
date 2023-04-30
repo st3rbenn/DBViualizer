@@ -10,7 +10,7 @@ interface IDBConnectionCredentials {
 export class DBConnection {
   private static _instance: DBConnection;
   private static _pool: Pool | null = null;
-  private static _connection: PoolConnection | null = null;
+  private static _connection: Connection | null = null;
 
   private static _host: string;
   private static _user: string;
@@ -33,11 +33,11 @@ export class DBConnection {
     this._pool = value;
   }
 
-  public static get connection(): PoolConnection | null {
+  public static get connection(): Connection | null {
     return this._connection;
   }
 
-  private static set connection(value: PoolConnection | null) {
+  private static set connection(value: Connection | null) {
     this._connection = value;
   }
 
@@ -112,7 +112,7 @@ export class DBConnection {
       if (!DBConnection.pool) {
         throw new Error('Pool is not initialized');
       }
-      await DBConnection.pool.getConnection();
+      DBConnection.connection = await DBConnection.pool.getConnection();
       console.log('Connected to database 😎');
     } catch (e) {
       console.log('Something went wrong while connecting to database', e);
@@ -155,5 +155,19 @@ export class DBConnection {
 
   public static checkIfInstanceExists(): boolean {
     return DBConnection.instance ? true : false;
+  }
+
+  public async getServerInformations() {
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
+
+    const serverInfoQuery =
+      "SHOW GLOBAL VARIABLES WHERE Variable_name LIKE 'port' OR Variable_name LIKE 'default_storage_engine' OR Variable_name LIKE 'basedir' OR Variable_name LIKE 'character_set_server';";
+
+    const getlocalIpServer = 'SELECT SUBSTRING_INDEX(USER(), "@", -1) AS ip;';    
+
+    const getRootUser = 'SELECT user();';
+    const nodeVersion = process.versions.node;
   }
 }

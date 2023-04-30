@@ -3,6 +3,7 @@ import { useDisclosure } from '@mantine/hooks';
 import { Button, Code, Flex, Grid, Group, Navbar, Title, createStyles, rem } from '@mantine/core';
 import { Box } from '@mantine/core';
 import { get, post } from '../../Service/apiService';
+import {TbDatabase, TbTable, TbHome2} from 'react-icons/tb'
 
 type Props = {};
 
@@ -11,7 +12,7 @@ function SideLeftMenu(props: Props) {
   const [data, setData] = useState<any>(null);
 
   const handleConnect = async () => {
-    await post('DB/db-connect', {
+    await post('DB/connect', {
       host: 'localhost',
       port: 8889,
       user: 'root',
@@ -20,8 +21,12 @@ function SideLeftMenu(props: Props) {
   };
 
   const handleConnect2 = async () => {
-    const res = await get('DB/databases');
-    setData(res);
+    const res = await get('DB/server-informations');
+    console.log('RESPONSE : ', res);
+  };
+
+  const handleButton3 = async () => {
+    const res = await get(`DB/tables/${data.data[1].Database}`);
   };
 
   return (
@@ -41,7 +46,8 @@ function SideLeftMenu(props: Props) {
       </Navbar.Section>
 
       <Navbar.Section>
-        
+        <Button onClick={handleConnect2}>Hello world!</Button>
+        <TbHome2 />
       </Navbar.Section>
     </Navbar>
   );
@@ -65,7 +71,7 @@ const useStyles = createStyles((theme) => ({
     }`,
   },
   code: {
-    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[3] : theme.black,
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.black,
     color: theme.colorScheme === 'dark' ? theme.colors.white : theme.white,
     fontWeight: 700,
     alignItems: 'center',
@@ -75,7 +81,7 @@ const useStyles = createStyles((theme) => ({
     marginTop: '.2rem',
     borderWidth: 1,
     borderStyle: 'solid',
-    borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[2] : theme.black,
+    borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.black,
     width: 'fit-content',
     height: 'fit-content',
   },

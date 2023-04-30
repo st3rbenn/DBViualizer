@@ -38,9 +38,9 @@ const apiClient = axios.create({
   },
 });
 
-export async function get<T extends IRequestResponse>(endpoint: string): Promise<T> {
+export async function get<T extends IRequestResponse>(endpoint: string, params?: {}): Promise<T> {
   try {
-    const response: AxiosResponse<T> = await apiClient.get(endpoint);
+    const response: AxiosResponse<T> = await apiClient.get(endpoint, { ...params });
     new NotificationUtils(response.data.message).showSuccessMessage();
     return response.data;
   } catch (e) {
