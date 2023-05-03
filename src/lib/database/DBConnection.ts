@@ -192,13 +192,14 @@ export class DBConnection {
       'SELECT (SELECT @@global.port) AS port, (SELECT @@global.default_storage_engine) AS default_storage_engine, (SELECT @@global.basedir) AS basedir, (SELECT @@global.character_set_server) AS character_set_server, (SELECT SUBSTRING_INDEX(USER(), "@", -1)) AS ip, (SELECT user()) AS user;';
 
     const nodeVesion = process.version;
-    console.log('Node version: ', nodeVesion);
 
     const [res] = await DBConnection.executeQuery(serverInfoQuery);
 
     const serverInfo = {
-      ...res,
-      nodeVesion,
+      MySQLServerInformation: { ...res },
+      SoftwareInformation: {
+        nodeVersion: nodeVesion,
+      },
     };
 
     return serverInfo;
