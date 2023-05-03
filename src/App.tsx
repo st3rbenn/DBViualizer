@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
-import { Button, Grid } from '@mantine/core';
+import { Grid } from '@mantine/core';
 import SideLeftMenu from './components/SideLeftMenu/SideLeftMenu';
-import { post, get } from './Service/apiService';
+import { post } from './Service/apiService';
+import Header from './components/layout/Header';
+
+const tabs = ['Information', 'Tables', 'Views', 'Procedures', 'Functions'];
 
 function App() {
   const handleConnect = async () => {
@@ -18,8 +21,10 @@ function App() {
   }, []);
 
   return (
-    <Grid align='center'>
+    <Grid>
       <SideLeftMenu />
+      <Header tabs={tabs} 
+      />
     </Grid>
   );
 }
