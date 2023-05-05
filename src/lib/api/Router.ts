@@ -3,6 +3,6 @@ import DatabaseRouter from './route/Database.router';
 
 const Router: Express = express();
 
-Router.use('/DB', DatabaseRouter);
+Router.use('/database', DatabaseRouter);
 
 export default Router;

@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { DBConnection } from '../../database/DBConnection';
+import { execSync } from 'child_process';
 
 export const connectToDatabase = async (req: Request, res: Response, next: NextFunction) => {
   const { host, port, user, password } = req.body;
@@ -119,6 +120,11 @@ export const getServersInformations = async (req: Request, res: Response) => {
       });
 
       const getServerInformation = await dbInstance.getServerInformations();
+
+      const output = execSync('tsc --version');
+      const typescriptVersion = output.toString().trim().split(' ')[1];
+
+      getServerInformation.SoftwareInformation.typescriptVersion = typescriptVersion;
 
       return res.status(200).json({
         message: 'all informations retrived ✅',

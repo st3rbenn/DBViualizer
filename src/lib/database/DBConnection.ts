@@ -7,6 +7,25 @@ interface IDBConnectionCredentials {
   port: number;
 }
 
+interface IServerInformation {
+  MySQLServerInformation: {
+    basedir: string;
+    character_set_server: string;
+    default_storage_engine: string;
+    ip: string;
+    port: number;
+    user: string;
+  },
+  SoftwareInformation: {
+    nodeVersion: string;
+    typescriptVersion: string;
+  },
+}
+
+type PartialServerInformation = {
+  [key in keyof IServerInformation]?: IServerInformation[key];
+}
+
 export class DBConnection {
   private static _instance: DBConnection;
   private static _pool: Pool | null = null;
@@ -195,10 +214,11 @@ export class DBConnection {
 
     const [res] = await DBConnection.executeQuery(serverInfoQuery);
 
-    const serverInfo = {
+    const serverInfo: PartialServerInformation = {
       MySQLServerInformation: { ...res },
       SoftwareInformation: {
         nodeVersion: nodeVesion,
+        typescriptVersion: ''
       },
     };
 

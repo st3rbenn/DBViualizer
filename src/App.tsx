@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
-import { Grid } from '@mantine/core';
+import { Box, Flex, Grid } from '@mantine/core';
 import SideLeftMenu from './components/SideLeftMenu/SideLeftMenu';
 import { post } from './Service/apiService';
 import Header from './components/layout/Header';
+import DatabaseService from './Service/DatabaseService';
 
 const tabs = ['Information', 'Tables', 'Views', 'Procedures', 'Functions'];
 
 function App() {
   const handleConnect = async () => {
-    await post('DB/connect', {
-      host: '127.0.0.1',
-      port: 3306,
-      user: 'root',
-      password: '',
-    });
+    const credentials = {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT as unknown as number,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASS,
+    }
+    await DatabaseService.connect(credentials);
   };
 
   useEffect(() => {
@@ -21,11 +23,10 @@ function App() {
   }, []);
 
   return (
-    <Grid>
+    <Flex>
       <SideLeftMenu />
-      <Header tabs={tabs} 
-      />
-    </Grid>
+      <Header tabs={tabs} />
+    </Flex>
   );
 }
 

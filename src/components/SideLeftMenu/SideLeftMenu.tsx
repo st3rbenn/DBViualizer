@@ -2,35 +2,35 @@ import React, { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Button, Code, Flex, Grid, Group, Navbar, Title, createStyles, rem } from '@mantine/core';
 import { Box } from '@mantine/core';
-import { get, post } from '../../Service/apiService';
 import {TbDatabase, TbTable, TbHome2} from 'react-icons/tb'
+import DatabaseService from '../../Service/DatabaseService';
 
 type Props = {};
 
 function SideLeftMenu(props: Props) {
   const { classes } = useStyles();
-  const [data, setData] = useState<any>(null);
 
   const handleConnect = async () => {
-    await post('DB/connect', {
+    const credentials = {
       host: 'localhost',
       port: 8889,
       user: 'root',
       password: 'root',
-    });
+    }
+    await DatabaseService.connect(credentials);
   };
 
-  const handleConnect2 = async () => {
-    const res = await get('DB/server-informations');
-    console.log('RESPONSE : ', res);
-  };
+  // const handleConnect2 = async () => {
+  //   const res = await get('DB/server-informations');
+  //   console.log('RESPONSE : ', res);
+  // };
 
-  const handleButton3 = async () => {
-    const res = await get(`DB/tables/${data.data[1].Database}`);
-  };
+  // const handleButton3 = async () => {
+  //   const res = await get(`DB/tables/${data.data[1].Database}`);
+  // };
 
   return (
-    <Navbar height='100vh' width={{ sm: 250 }} p='md' className={classes.navbar}>
+    <Navbar height='100vh' w={250} p='md' className={classes.navbar}>
       <Navbar.Section className={classes.header}>
         <Group
           position='apart'
@@ -43,11 +43,6 @@ function SideLeftMenu(props: Props) {
           <Title size={25}>SQLNest</Title>
           <Code className={classes.code}>v0.1.0</Code>
         </Group>
-      </Navbar.Section>
-
-      <Navbar.Section>
-        <Button onClick={handleConnect2}>Hello world!</Button>
-        <TbHome2 />
       </Navbar.Section>
     </Navbar>
   );

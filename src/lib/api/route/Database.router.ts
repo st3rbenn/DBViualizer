@@ -5,7 +5,7 @@ const DatabaseRouter: Express = express();
 
 DatabaseRouter.post('/connect', connectToDatabase);
 DatabaseRouter.get('/server-informations', getServersInformations);
-DatabaseRouter.get('/databases', retrieveAllDatabase);
+DatabaseRouter.get('/all', retrieveAllDatabase);
 DatabaseRouter.get('/tables/:database', getTablesFromDatabase);
 DatabaseRouter.get('/disconnect', disconnectDatabase);
 
