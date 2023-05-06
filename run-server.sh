@@ -29,9 +29,6 @@ nodemon --watch src --ext ts,tsx --exec 'ts-node' ./server/server.tsx 2>&1 | whi
   elif [[ $line == *"Server is listening on port"* ]]; then
     # Extraire le numéro de port avec sed
     PORT=$(echo $line | sed -n 's/.*port \([0-9]*\).*/\1/p')
-
-    # Afficher le message personnalisé
-    echo -e "${STARTUP_EMOJI} Your server is ready to use on port ${GREEN}✨${NC} ${PORT} ${GREEN}✨${NC}"
   elif [[ $line == *"[nodemon]"* ]]; then
     echo -e "${BLUE}${INFO_EMOJI} $line${NC}"
   elif [[ $line == *"[webpack]"* ]]; then

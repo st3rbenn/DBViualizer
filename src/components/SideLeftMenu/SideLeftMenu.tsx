@@ -1,33 +1,17 @@
-import React, { useState } from 'react';
-import { useDisclosure } from '@mantine/hooks';
-import { Button, Code, Flex, Grid, Group, Navbar, Title, createStyles, rem } from '@mantine/core';
-import { Box } from '@mantine/core';
-import {TbDatabase, TbTable, TbHome2} from 'react-icons/tb'
-import DatabaseService from '../../Service/DatabaseService';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Code, Flex, Group, Navbar, Text, Title, createStyles, rem } from '@mantine/core';
+import { TbDatabase, TbTable, TbHome2 } from 'react-icons/tb';
+import { RootState } from '../../store';
+import { useSelector } from 'react-redux';
+import CustomDatabaseTab from '../database/CustomDatabaseTab';
 
 type Props = {};
 
 function SideLeftMenu(props: Props) {
   const { classes } = useStyles();
-
-  const handleConnect = async () => {
-    const credentials = {
-      host: 'localhost',
-      port: 8889,
-      user: 'root',
-      password: 'root',
-    }
-    await DatabaseService.connect(credentials);
-  };
-
-  // const handleConnect2 = async () => {
-  //   const res = await get('DB/server-informations');
-  //   console.log('RESPONSE : ', res);
-  // };
-
-  // const handleButton3 = async () => {
-  //   const res = await get(`DB/tables/${data.data[1].Database}`);
-  // };
+  const [dbHover, setDbHover] = useState<boolean>(false);
+  const databases = useSelector((state: RootState) => state.databases);
+  const loadingDatabases = useSelector((state: RootState) => state.loadingDatabases);
 
   return (
     <Navbar height='100vh' w={250} p='md' className={classes.navbar}>
@@ -43,6 +27,12 @@ function SideLeftMenu(props: Props) {
           <Title size={25}>SQLNest</Title>
           <Code className={classes.code}>v0.1.0</Code>
         </Group>
+      </Navbar.Section>
+
+      <Navbar.Section w='100%'>
+        {databases?.map((database: {Database: string}) => (
+          <CustomDatabaseTab name={database.Database} />
+        ))}
       </Navbar.Section>
     </Navbar>
   );
@@ -61,9 +51,7 @@ const useStyles = createStyles((theme) => ({
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     paddingBottom: theme.spacing.md,
     marginBottom: `calc(${theme.spacing.md} * 1.5)`,
-    borderBottom: `${rem(1)} solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]
-    }`,
+    borderBottom: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]}`,
   },
   code: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.black,

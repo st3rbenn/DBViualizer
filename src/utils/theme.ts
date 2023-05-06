@@ -22,6 +22,13 @@ const theme: Partial<MantineTheme> = {
     white,
   },
   components: {
+    Paper: {
+      styles: {
+        root: {
+          minHeight: '100vh',
+        },
+      },
+    },
     Button: {
       styles: {
         root: {

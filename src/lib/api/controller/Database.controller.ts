@@ -15,10 +15,7 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
     const isInstanceExist = DBConnection.instance;
 
     if (isInstanceExist) {
-      return res.status(406).json({
-        message: 'warning ⚠️',
-        error: 'Already connected to database 🚧',
-      });
+      return res.status(406);
     }
 
     await DBConnection.createInstance(dbCredentials).connect();

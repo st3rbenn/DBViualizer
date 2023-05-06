@@ -170,32 +170,14 @@ export class DBConnection {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
-    const [rows] = await DBConnection.executeQuery('SHOW DATABASES;');
-    const databases: string[] = [];
-    if (Array.isArray(rows)) {
-      rows.forEach((row: any) => {
-        if ('Database' in row) {
-          databases.push(row.Database);
-        }
-      });
-    }
-    return databases;
+    return await DBConnection.executeQuery('SHOW DATABASES;');
   }
 
   public async getAllTablesFromDatabase(databaseName: string): Promise<string[]> {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
-    const [rows] = await DBConnection.executeQuery(`SHOW TABLES FROM ${databaseName};`);
-    const tables: string[] = [];
-    if (Array.isArray(rows)) {
-      rows.forEach((row: any) => {
-        if (`Tables_in_${databaseName}` in row) {
-          tables.push(row[`Tables_in_${databaseName}`]);
-        }
-      });
-    }
-    return tables;
+    return await DBConnection.executeQuery(`SHOW TABLES FROM ${databaseName};`);
   }
 
   public static checkIfInstanceExists(): boolean {

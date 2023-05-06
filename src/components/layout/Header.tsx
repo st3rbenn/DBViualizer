@@ -1,8 +1,9 @@
 import { Container, Tabs, createStyles, rem } from '@mantine/core';
 import React from 'react';
+import { ITabs } from '../../App';
 
 type HeaderProps = {
-  tabs: string[];
+  tabs: ITabs[];
 };
 
 function Header(props: HeaderProps) {
@@ -10,14 +11,14 @@ function Header(props: HeaderProps) {
   const { classes } = useStyles();
 
   const items = tabs.map((tab) => (
-    <Tabs.Tab value={tab} key={tab} className={classes.tabs}>
-      {tab}
+    <Tabs.Tab value={tab.name} key={tab.name} className={classes.tabs} icon={tab.icon}>
+      {tab.name}
     </Tabs.Tab>
   ));
 
   return (
     <Container className={classes.container}>
-      <Tabs display='flex' dir='column' defaultValue='Information'>
+      <Tabs display='flex' dir='column' defaultValue='Information' variant='outline'>
         {items}
       </Tabs>
     </Container>
@@ -30,7 +31,10 @@ const useStyles = createStyles((theme) => ({
     padding: theme.spacing.md,
     paddingTop: rem(24.27),
     paddingBottom: rem(24.27),
+    fontSize: rem(14),
+    fontWeight: 600,
     '&:hover': {
+      borderBottom: 'none',
     },
     '&:active': {
       borderBottom: 'none',
