@@ -132,10 +132,8 @@ export class DBConnection {
         throw new Error('Pool is not initialized');
       }
       DBConnection.connection = await DBConnection.pool.getConnection();
-      console.log('Connected to database 😎');
     } catch (e) {
       console.log('Something went wrong while connecting to database', e);
-      throw new Error('Something went wrong while connecting to database', e);
     }
   }
 

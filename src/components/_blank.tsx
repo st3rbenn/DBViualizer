@@ -1,13 +1,13 @@
 import { createStyles } from '@mantine/core';
 import React from 'react';
 
-type Props = {};
+type _BlankProps = {};
 
-const _blank = (props: Props) => {
+const _Blank = (props: _BlankProps) => {
   const { classes } = useStyles();
   return <div>_blank</div>;
 };
 
 const useStyles = createStyles((theme) => ({}));
 
-export default _blank;
+export default _Blank;

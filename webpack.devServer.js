@@ -10,5 +10,7 @@ module.exports = {
         secure: false,
       },
     },
+    historyApiFallback: true,
+    compress: true,
   },
 };

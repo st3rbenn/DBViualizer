@@ -17,11 +17,9 @@ function Header(props: HeaderProps) {
   ));
 
   return (
-    <Container className={classes.container}>
-      <Tabs display='flex' dir='column' defaultValue='Information' variant='outline'>
-        {items}
-      </Tabs>
-    </Container>
+    <Tabs display='flex' dir='column' defaultValue='Information' variant='outline' w='100%'>
+      <Container className={classes.container}>{items}</Container>
+    </Tabs>
   );
 }
 
@@ -33,6 +31,7 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: rem(24.27),
     fontSize: rem(14),
     fontWeight: 600,
+    color: '#D0CECB',
     '&:hover': {
       borderBottom: 'none',
     },
@@ -41,6 +40,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   container: {
+    display: 'flex',
     maxWidth: '100%',
     width: '100%',
     marginRight: 0,

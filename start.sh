@@ -66,4 +66,39 @@ else
   echo -e "${GREEN}${CHECK_MARK_EMOJI}${NC} MySQL server is already running"
 fi
 
+# Vérifier si les coordonnées ont déjà été saisies
+if [ ! -s .env ]; then
+  echo "Veuillez entrer les informations suivantes pour la connexion MySQL:"
+
+  # Demander le nom d'utilisateur
+  read -p "Nom d'utilisateur: " MYSQL_USER
+
+  # Demander le mot de passe
+  read -s -p "Mot de passe: " MYSQL_PASSWORD
+  echo ""
+
+  # Demander l'hôte
+  read -p "Hôte (localhost par défaut): " MYSQL_HOST
+  MYSQL_HOST=${MYSQL_HOST:-localhost}
+
+  # Demander le port
+  read -p "Port (3306 par défaut): " MYSQL_PORT
+  MYSQL_PORT=${MYSQL_PORT:-3306}
+
+  # Créer et écrire les informations dans le fichier .env
+  cat << EOF > .env
+DB_USER=$MYSQL_USER
+DB_PASS=$MYSQL_PASSWORD
+DB_HOST=$MYSQL_HOST
+DB_PORT=$MYSQL_PORT
+EOF
+
+  echo "Les informations de connexion MySQL ont été enregistrées dans le fichier .env."
+else
+  echo "Le fichier .env existe déjà. Les informations de connexion MySQL seront chargées depuis ce fichier."
+fi
+
+# Charger les variables d'environnement depuis le fichier .env
+export $(grep -v '^#' .env | xargs)
+
 concurrently "yarn dev:client" "yarn dev:server"
