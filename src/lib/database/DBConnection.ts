@@ -15,26 +15,35 @@ interface IServerInformation {
     ip: string;
     port: number;
     user: string;
-  },
+  };
   SoftwareInformation: {
     nodeVersion: string;
     typescriptVersion: string;
-  },
+  };
 }
 
 type PartialServerInformation = {
   [key in keyof IServerInformation]?: IServerInformation[key];
-}
+};
 
 export class DBConnection {
   private static _instance: DBConnection;
   private static _pool: Pool | null = null;
   private static _connection: Connection | null = null;
+  private static _currentDatabase: any;
 
   private static _host: string;
   private static _user: string;
   private static _password: string;
   private static _port: number;
+
+  public static get currentDatabase(): any {
+    return this._currentDatabase;
+  }
+
+  public static set currentDatabase(value: any) {
+    this._currentDatabase = value;
+  }
 
   public static get instance(): DBConnection {
     return this._instance;
@@ -125,7 +134,7 @@ export class DBConnection {
     return DBConnection.instance;
   }
 
-  public async connect(): Promise<void> {
+  public async connectToMySQL(): Promise<void> {
     try {
       console.log('Connecting to database... 😴');
       if (!DBConnection.pool) {
@@ -198,10 +207,25 @@ export class DBConnection {
       MySQLServerInformation: { ...res },
       SoftwareInformation: {
         nodeVersion: nodeVesion,
-        typescriptVersion: ''
+        typescriptVersion: '',
       },
     };
 
     return serverInfo;
+  }
+
+  public async useDatabase(database: string) {
+    if (!DBConnection.connection) {
+      throw new Error('Connection is not established');
+    }
+
+    try {
+      console.log('ICICICICICIIC');
+      await DBConnection.connection.changeUser({ database });
+
+      console.log('DATABASE', database);
+    } catch (e) {
+      console.log('ERROR', e);
+    }
   }
 }

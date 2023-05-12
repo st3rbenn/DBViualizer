@@ -1,6 +1,8 @@
 import { Flex, Text, createStyles } from '@mantine/core';
 import React from 'react';
 import { TbDatabase } from 'react-icons/tb';
+import { useAppThunkDispatch } from '../../store';
+import { useDatabase } from '../../store/mainslice';
 
 type CustomDatabaseTabProps = {
   name: string;
@@ -9,8 +11,18 @@ type CustomDatabaseTabProps = {
 const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
   const { name } = props;
   const { classes } = useStyles();
+  const dispatch = useAppThunkDispatch();
+
+  const handleSelectDatabase = async () => {
+    const res = await dispatch(useDatabase(name));
+
+    if(res.meta.requestStatus === 'fulfilled') {
+      console.log('Database selected');
+    }
+  };
+
   return (
-    <Flex className={classes.database}>
+    <Flex className={classes.database} onClick={handleSelectDatabase}>
       <TbDatabase size={20} color='#D0CECB' />
       <Text
         style={{
@@ -34,7 +46,6 @@ const useStyles = createStyles((theme) => ({
     fontSize: '.7rem',
     padding: '.2rem .5rem',
     cursor: 'pointer',
-
     '&:hover': {
       backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.black,
     },

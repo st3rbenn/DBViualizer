@@ -11,7 +11,7 @@ type Props = {};
 function SideLeftMenu(props: Props) {
   const { classes } = useStyles();
   const databases = useSelector((state: RootState) => state.databases);
-  const loadingDatabases = useSelector((state: RootState) => state.loadingDatabases);
+
   const dispatch = useAppThunkDispatch();
   const handleConnect = async () => {
     await dispatch(connect());

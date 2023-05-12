@@ -29,6 +29,15 @@ class DatabaseService {
       throw e;
     }
   }
+
+  static async useDatabase(database: string) {
+    try {
+      const response = await get(`/database/use/${database}`)
+      return response.data
+    } catch (e) {
+      throw e;
+    }
+  }
 }
 
 export default DatabaseService;

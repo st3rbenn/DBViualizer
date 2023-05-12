@@ -5,6 +5,8 @@ export interface RootState {
   databases: {Database: string}[];
   loadingDatabaseConnection: boolean;
   loadingDatabases: boolean;
+  loadingSingleDatabase: boolean;
+  currentDatabase: any;
 }
 
 type PartialRootState = {
@@ -15,6 +17,8 @@ const initialState: PartialRootState = {
   databases: [],
   loadingDatabaseConnection: false,
   loadingDatabases: false,
+  loadingSingleDatabase: false,
+  currentDatabase: null,
 };
 
 export const connect = createAsyncThunk('root/connect', async () => {
@@ -24,6 +28,10 @@ export const connect = createAsyncThunk('root/connect', async () => {
 export const retrieveAllDatabase = createAsyncThunk('root/retrieveAllDatabase', async () => {
   return await DatabaseService.retrieveAllDatabase();
 });
+
+export const useDatabase = createAsyncThunk('root/useDatabase', async (database: string) => {
+  return await DatabaseService.useDatabase(database)
+})
 
 export const mainSlice = createSlice({
   name: 'root',
@@ -49,7 +57,16 @@ export const mainSlice = createSlice({
       })
       .addCase(retrieveAllDatabase.rejected, (state) => {
         state.loadingDatabases = false;
-      });
+      })
+      .addCase(useDatabase.pending, (state) => {
+        state.loadingSingleDatabase = true;
+      })
+      .addCase(useDatabase.fulfilled, (state, action) => {
+        state.loadingSingleDatabase = false;
+      })
+      .addCase(useDatabase.rejected, (state) => {
+        state.loadingSingleDatabase = false;
+      })
   },
 });
 

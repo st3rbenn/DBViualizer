@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Flex, Paper } from '@mantine/core';
 import SideLeftMenu from './components/SideLeftMenu/SideLeftMenu';
-import Header from './components/layout/Header';
+import Header from './components/header/Header';
 import { useAppThunkDispatch } from './store';
 import { connect, retrieveAllDatabase } from './store/mainslice';
 import { TbDatabaseExport, TbDatabaseImport, TbHome2, TbScript, TbServer2, TbSettings } from 'react-icons/tb';

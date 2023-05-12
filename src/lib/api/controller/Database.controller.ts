@@ -18,7 +18,7 @@ export const connectToDatabase = async (req: Request, res: Response, next: NextF
       return res.status(406);
     }
 
-    await DBConnection.createInstance(dbCredentials).connect();
+    await DBConnection.createInstance(dbCredentials).connectToMySQL();
 
     return res.status(200).json({
       message: 'Connected to MySQL',
@@ -136,3 +136,31 @@ export const getServersInformations = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const useDatabase = async (req: Request, res: Response) => {
+  try {
+    const dbInstance = DBConnection.instance;
+
+    // console.log('INSTANCE', dbInstance)
+
+    // if(!dbInstance) {
+    //   return res.status(406).json({
+    //     message: 'error while trying to use database',
+    //     eror: 'no database instance found, please connect to database first 🙏'
+    //   })
+    // }
+
+    const {database} = req.params;
+
+    await dbInstance.useDatabase(database)
+
+    return res.status(200).json({
+      message: `Current database in use : ${database}`,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: 'error use database',
+      error: 'Something went wrong, please try again later : ' + e,
+    })
+  }
+}
