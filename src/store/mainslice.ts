@@ -3,10 +3,12 @@ import DatabaseService, { IDBCredentials } from '../services/DatabaseService';
 
 export interface RootState {
   databases: {Database: string}[];
+  currentDatabase: any;
+  tables: string[];
   loadingDatabaseConnection: boolean;
   loadingDatabases: boolean;
   loadingSingleDatabase: boolean;
-  currentDatabase: any;
+
 }
 
 type PartialRootState = {
@@ -15,10 +17,10 @@ type PartialRootState = {
 
 const initialState: PartialRootState = {
   databases: [],
+  currentDatabase: null,
   loadingDatabaseConnection: false,
   loadingDatabases: false,
   loadingSingleDatabase: false,
-  currentDatabase: null,
 };
 
 export const connect = createAsyncThunk('root/connect', async () => {
@@ -30,6 +32,7 @@ export const retrieveAllDatabase = createAsyncThunk('root/retrieveAllDatabase', 
 });
 
 export const useDatabase = createAsyncThunk('root/useDatabase', async (database: string) => {
+  console.log('database', database)
   return await DatabaseService.useDatabase(database)
 })
 
@@ -63,6 +66,9 @@ export const mainSlice = createSlice({
       })
       .addCase(useDatabase.fulfilled, (state, action) => {
         state.loadingSingleDatabase = false;
+        console.log('action', action)
+        state.currentDatabase = action.payload.data.DBName;
+        state.tables = action.payload.data.DBTable;
       })
       .addCase(useDatabase.rejected, (state) => {
         state.loadingSingleDatabase = false;

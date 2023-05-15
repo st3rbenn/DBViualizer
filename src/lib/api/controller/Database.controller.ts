@@ -67,7 +67,7 @@ export const getTablesFromDatabase = async (req: Request, res: Response) => {
 
     const { database } = req.params;
 
-    const result = await dbInstance.getAllTablesFromDatabase(database);
+    const result = await dbInstance.getAllTablesFromDatabase();
 
     return res.status(200).json({
       message: 'Retrieved all tables ✅',
@@ -116,20 +116,19 @@ export const getServersInformations = async (req: Request, res: Response) => {
         error: 'no database instance found, please connect to database first 🙏',
       });
 
-      const getServerInformation = await dbInstance.getServerInformations();
+    const getServerInformation = await dbInstance.getServerInformations();
 
-      const output = execSync('tsc --version');
-      const typescriptVersion = output.toString().trim().split(' ')[1];
+    const output = execSync('tsc --version');
+    const typescriptVersion = output.toString().trim().split(' ')[1];
 
-      getServerInformation.SoftwareInformation.typescriptVersion = typescriptVersion;
+    getServerInformation.SoftwareInformation.typescriptVersion = typescriptVersion;
 
-      return res.status(200).json({
-        message: 'all informations retrived ✅',
-        data: getServerInformation
-      })
-    
+    return res.status(200).json({
+      message: 'all informations retrived ✅',
+      data: getServerInformation,
+    });
   } catch (e) {
-    console.log(e)
+    console.log(e);
     return res.status(500).json({
       message: 'error while disconnect database',
       error: 'Something went wrong, please try again later',
@@ -141,26 +140,38 @@ export const useDatabase = async (req: Request, res: Response) => {
   try {
     const dbInstance = DBConnection.instance;
 
-    // console.log('INSTANCE', dbInstance)
+    if (!dbInstance) {
+      return res.status(406).json({
+        message: 'error while trying to use database',
+        eror: 'no database instance found, please connect to database first 🙏',
+      });
+    }
 
-    // if(!dbInstance) {
-    //   return res.status(406).json({
-    //     message: 'error while trying to use database',
-    //     eror: 'no database instance found, please connect to database first 🙏'
-    //   })
-    // }
+    const { database } = req.params;
 
-    const {database} = req.params;
+    await dbInstance.useDatabase(database);
 
-    await dbInstance.useDatabase(database)
+    const DBTable = await dbInstance.getAllTablesFromDatabase();
+
+    let tables: string[] = [];
+
+    for (const table of DBTable) {
+      tables.push(table[('Tables_in_' + database) as keyof typeof table] as string);
+    }
+
+    const data = {
+      DBName: database,
+      DBTable: tables,
+    };
 
     return res.status(200).json({
       message: `Current database in use : ${database}`,
+      data,
     });
   } catch (e) {
     return res.status(500).json({
       message: 'error use database',
       error: 'Something went wrong, please try again later : ' + e,
-    })
+    });
   }
-}
+};

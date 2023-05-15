@@ -17,7 +17,11 @@ function Header(props: HeaderProps) {
   ));
 
   return (
-    <Tabs display='flex' dir='column' defaultValue='Information' variant='outline' w='100%'>
+    <Tabs display='flex' dir='column' defaultValue='Information' variant='outline' w='100%' sx={{
+      backgroundColor: 'transparent',
+      position: 'relative',
+      zIndex: 5,
+    }}>
       <Container className={classes.container}>{items}</Container>
     </Tabs>
   );

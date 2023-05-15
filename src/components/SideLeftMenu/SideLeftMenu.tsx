@@ -3,7 +3,7 @@ import { Box, Button, Code, Flex, Group, Navbar, Text, Title, createStyles, rem 
 import { TbDatabase, TbTable, TbHome2 } from 'react-icons/tb';
 import { RootState, useAppThunkDispatch } from '../../store';
 import { useSelector } from 'react-redux';
-import CustomDatabaseTab from '../database/CustomDatabaseTab';
+import CustomDatabaseTab from '../database/DatabaseTab';
 import { connect, retrieveAllDatabase } from '../../store/mainslice';
 
 type Props = {};
@@ -23,8 +23,8 @@ function SideLeftMenu(props: Props) {
   }, []);
 
   return (
-    <Navbar height='100vh' w={250} p='md' className={classes.navbar}>
-      <Navbar.Section className={classes.header}>
+    <Navbar height='100vh' w={300} className={classes.navbar} draggable>
+      <Navbar.Section className={classes.header} p='md'>
         <Group
           position='apart'
           style={{
@@ -38,8 +38,8 @@ function SideLeftMenu(props: Props) {
         </Group>
       </Navbar.Section>
 
-      <Navbar.Section w='100%'>
-        {databases?.map((database: {Database: string}) => (
+      <Navbar.Section pl='md' pr='md' sx={{ overflowY: 'auto', flex: 1, marginTop: 10 }}>
+        {databases?.map((database: { Database: string }) => (
           <CustomDatabaseTab name={database.Database} key={database.Database} />
         ))}
       </Navbar.Section>
@@ -51,16 +51,16 @@ const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
     paddingBottom: 0,
+    position: 'relative',
   },
   header: {
-    padding: theme.spacing.md,
-    paddingTop: 0,
-    marginLeft: `calc(${theme.spacing.md} * -1)`,
-    marginRight: `calc(${theme.spacing.md} * -1)`,
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,
     paddingBottom: theme.spacing.md,
-    marginBottom: `calc(${theme.spacing.md} * 1.5)`,
     borderBottom: `${rem(1)} solid ${theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2]}`,
+    backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
+    position: 'sticky',
+    top: 0,
+    zIndex: 5,
   },
   code: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[5] : theme.black,

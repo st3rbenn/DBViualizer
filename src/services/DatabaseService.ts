@@ -33,7 +33,7 @@ class DatabaseService {
   static async useDatabase(database: string) {
     try {
       const response = await get(`/database/use/${database}`)
-      return response.data
+      return response
     } catch (e) {
       throw e;
     }

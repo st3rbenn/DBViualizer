@@ -32,7 +32,7 @@ function App() {
         width: '100vw',
       }}>
       <SideLeftMenu />
-      <Flex direction='column' style={{ width: '100%', height: '100%' }}>
+      <Flex direction='column' style={{ width: '100%', height: '100%', position: 'relative', zIndex: 100 }}>
         <Header tabs={tabs} />
         <Routes>
           <Route path='/' element={<Flex>Home</Flex>} index />

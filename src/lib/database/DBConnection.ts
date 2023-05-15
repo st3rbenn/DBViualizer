@@ -180,11 +180,16 @@ export class DBConnection {
     return await DBConnection.executeQuery('SHOW DATABASES;');
   }
 
-  public async getAllTablesFromDatabase(databaseName: string): Promise<string[]> {
+  public async getAllTablesFromDatabase(): Promise<string[]> {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
-    return await DBConnection.executeQuery(`SHOW TABLES FROM ${databaseName};`);
+
+    if(!DBConnection.currentDatabase) {
+      throw new Error('Database is not selected');
+    }
+
+    return await DBConnection.executeQuery(`SHOW TABLES FROM ${DBConnection.currentDatabase};`);
   }
 
   public static checkIfInstanceExists(): boolean {
@@ -220,10 +225,8 @@ export class DBConnection {
     }
 
     try {
-      console.log('ICICICICICIIC');
       await DBConnection.connection.changeUser({ database });
-
-      console.log('DATABASE', database);
+      DBConnection.currentDatabase = database;
     } catch (e) {
       console.log('ERROR', e);
     }
