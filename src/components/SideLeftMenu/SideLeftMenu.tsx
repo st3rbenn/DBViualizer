@@ -1,14 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box, Button, Code, Flex, Group, Navbar, Text, Title, createStyles, rem } from '@mantine/core';
+import React, { DragEvent, useEffect, useMemo, useState } from 'react';
+import { Box, Button, Code, Divider, Flex, Group, Navbar, Text, Title, createStyles, rem } from '@mantine/core';
 import { TbDatabase, TbTable, TbHome2 } from 'react-icons/tb';
 import { RootState, useAppThunkDispatch } from '../../store';
 import { useSelector } from 'react-redux';
 import CustomDatabaseTab from '../database/DatabaseTab';
 import { connect, retrieveAllDatabase } from '../../store/mainslice';
 
-type Props = {};
+type Props = {
+  navbarWidth: number;
+};
 
 function SideLeftMenu(props: Props) {
+  const { navbarWidth } = props;
   const { classes } = useStyles();
   const databases = useSelector((state: RootState) => state.databases);
 
@@ -23,7 +26,7 @@ function SideLeftMenu(props: Props) {
   }, []);
 
   return (
-    <Navbar height='100vh' w={300} className={classes.navbar} draggable>
+    <Navbar height='100vh' w={navbarWidth} className={classes.navbar}>
       <Navbar.Section className={classes.header} p='md'>
         <Group
           position='apart'
@@ -39,8 +42,8 @@ function SideLeftMenu(props: Props) {
       </Navbar.Section>
 
       <Navbar.Section pl='md' pr='md' sx={{ overflowY: 'auto', flex: 1, marginTop: 10 }}>
-        {databases?.map((database: { Database: string }) => (
-          <CustomDatabaseTab name={database.Database} key={database.Database} />
+        {databases?.map(({ Database }) => (
+          <CustomDatabaseTab name={Database} key={Database} />
         ))}
       </Navbar.Section>
     </Navbar>

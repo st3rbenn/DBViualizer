@@ -28,7 +28,7 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
       className={classes.database}
       onClick={handleSelectDatabase}
       style={{
-        backgroundColor: isSelect ? 'rgba(59, 74, 109, .5)' : '',
+        backgroundColor: isSelect ? 'rgba(59, 74, 109, .3)' : '',
         overflow: 'hidden',
         position: 'relative',
         zIndex: 1,
@@ -60,7 +60,6 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
           />
           <Grid
             sx={{
-              width: '100%',
               paddingBottom: '.3rem',
               paddingTop: '.3rem',
             }}>
@@ -96,9 +95,7 @@ const useStyles = createStyles((theme) => ({
     flexDirection: 'row',
     paddingTop: 5,
     paddingBottom: 10,
-    height: '100%',
-    width: '100%',
-    overflow: 'auto',
+    width: 230,
   },
 }));
 

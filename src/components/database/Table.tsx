@@ -1,4 +1,4 @@
-import { Divider, Flex, Grid, Text, createStyles } from '@mantine/core';
+import { Divider, Flex, Grid, Text, createStyles, Tooltip } from '@mantine/core';
 import React from 'react';
 import { TbTable } from 'react-icons/tb';
 
@@ -9,25 +9,44 @@ type TableProps = {
 const Table = (props: TableProps) => {
   const { name } = props;
   const { classes } = useStyles();
+
+  //check if text is too long and add tooltip
+
   return (
-    <Grid.Col className={classes.tableContainer}>
-      <Divider labelPosition='right' className={classes.table} variant='dashed' color='#D0CECB' />
-      <Flex className={classes.tableHover} onClick={() => console.log('clicked')}>
-        <TbTable
-          color='#D0CECB'
-          style={{
-            alignSelf: 'center',
-          }}
-        />
-        <Text
-          sx={{
-            marginLeft: 5,
-          }}
-          color='#D0CECB'>
-          {name}
-        </Text>
-      </Flex>
-    </Grid.Col>
+    <Tooltip
+      label={name}
+      position="top-start"
+      withArrow
+      zIndex={5}
+      sx={{
+        fontSize: '.5rem',
+      }}
+      openDelay={700}
+      closeDelay={300}
+      transitionProps={{
+        duration: 0.2,
+      }}
+      >
+      <Grid.Col className={classes.tableContainer}>
+        <Flex onClick={() => console.log('clicked')}>
+          <TbTable
+            color='#D0CECB'
+            style={{
+              alignSelf: 'center',
+            }}
+            width={15}
+            height={15}
+          />
+          <Text
+            sx={{
+              marginLeft: 5,
+            }}
+            color='#D0CECB'>
+            {name}
+          </Text>
+        </Flex>
+      </Grid.Col>
+    </Tooltip>
   );
 };
 
@@ -38,7 +57,12 @@ const useStyles = createStyles((theme) => ({
     padding: 0,
     paddingLeft: '.5rem',
     width: '100%',
-    overflow: 'hidden',
+    marginLeft: '.5rem',
+    '&:hover': {
+      backgroundColor: 'rgba(111, 127, 172, .3)',
+      marginLeft: '.8rem',
+      borderRadius: theme.radius.sm,
+    },
   },
   table: {
     color: theme.colorScheme === 'dark' ? theme.colors.white : theme.white,
@@ -46,18 +70,7 @@ const useStyles = createStyles((theme) => ({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '20%',
     marginRight: '.5rem',
-  },
-
-  tableHover: {
-    borderRadius: theme.radius.sm,
-    zIndex: 2,
-    '&:hover': {
-      backgroundColor: 'rgba(111, 127, 172, .3)',
-      paddingRight: '.2rem',
-      paddingLeft: '.2rem',
-    },
   },
 }));
 
