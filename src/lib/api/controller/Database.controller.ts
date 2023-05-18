@@ -118,10 +118,17 @@ export const getServersInformations = async (req: Request, res: Response) => {
 
     const getServerInformation = await dbInstance.getServerInformations();
 
-    const output = execSync('tsc --version');
-    const typescriptVersion = output.toString().trim().split(' ')[1];
+    const outputTsVersion = execSync('tsc --version');
+    const outputYarnVersion = execSync('yarn --version');
+    const outputNodeVersion = process.version;
+    
+    const nodeVersion = outputNodeVersion.toString().trim();
+    const yarnVersion = outputYarnVersion.toString().trim();
+    const typescriptVersion = outputTsVersion.toString().trim().split(' ')[1];
 
     getServerInformation.SoftwareInformation.typescriptVersion = typescriptVersion;
+    getServerInformation.SoftwareInformation.nodeVersion = nodeVersion;
+    getServerInformation.SoftwareInformation.yarnVersion = yarnVersion;
 
     return res.status(200).json({
       message: 'all informations retrived ✅',

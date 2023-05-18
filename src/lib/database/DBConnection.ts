@@ -19,6 +19,7 @@ interface IServerInformation {
   SoftwareInformation: {
     nodeVersion: string;
     typescriptVersion: string;
+    yarnVersion: string;
   };
 }
 
@@ -185,7 +186,7 @@ export class DBConnection {
       throw new Error('Connection is not established');
     }
 
-    if(!DBConnection.currentDatabase) {
+    if (!DBConnection.currentDatabase) {
       throw new Error('Database is not selected');
     }
 
@@ -196,7 +197,7 @@ export class DBConnection {
     return DBConnection.instance ? true : false;
   }
 
-  public async getServerInformations() {
+  public async getServerInformations(): Promise<PartialServerInformation> {
     if (!DBConnection.connection) {
       throw new Error('Connection is not established');
     }
@@ -204,15 +205,14 @@ export class DBConnection {
     const serverInfoQuery =
       'SELECT (SELECT @@global.port) AS port, (SELECT @@global.default_storage_engine) AS default_storage_engine, (SELECT @@global.basedir) AS basedir, (SELECT @@global.character_set_server) AS character_set_server, (SELECT SUBSTRING_INDEX(USER(), "@", -1)) AS ip, (SELECT user()) AS user;';
 
-    const nodeVesion = process.version;
-
     const [res] = await DBConnection.executeQuery(serverInfoQuery);
 
     const serverInfo: PartialServerInformation = {
       MySQLServerInformation: { ...res },
       SoftwareInformation: {
-        nodeVersion: nodeVesion,
+        nodeVersion: '',
         typescriptVersion: '',
+        yarnVersion: '',
       },
     };
 
