@@ -5,6 +5,7 @@ import { RootState, useAppThunkDispatch } from '../../store';
 import { useSelector } from 'react-redux';
 import CustomDatabaseTab from '../database/DatabaseTab';
 import { connect, retrieveAllDatabase } from '../../store/mainslice';
+import { ECurrentDatabaseSelected, ICurrentDatabaseSelected } from '../interface/Common.interface';
 
 type Props = {
   navbarWidth: number;
@@ -14,8 +15,24 @@ function SideLeftMenu(props: Props) {
   const { navbarWidth } = props;
   const { classes } = useStyles();
   const databases = useSelector((state: RootState) => state.databases);
-
   const dispatch = useAppThunkDispatch();
+
+  const [currentDatabaseSelected, setCurrentDatabaseSelected] = useState<Partial<ICurrentDatabaseSelected>[]>([]);
+
+  const handleSelectDatabase = async (info: ICurrentDatabaseSelected) => {
+
+    const isAlreadySelected = currentDatabaseSelected.find((item) => item.name === info.name);
+    if (!isAlreadySelected) {
+      setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
+    } else {
+      if(info.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT) {
+        setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
+      } else {
+        setCurrentDatabaseSelected(currentDatabaseSelected.filter((item) => item.name !== info.name));
+      }
+    }
+  };
+
   const handleConnect = async () => {
     await dispatch(connect());
     await dispatch(retrieveAllDatabase());
@@ -43,7 +60,12 @@ function SideLeftMenu(props: Props) {
 
       <Navbar.Section pl='md' pr='md' sx={{ overflowY: 'auto', flex: 1, marginTop: 10 }}>
         {databases?.map(({ Database }) => (
-          <CustomDatabaseTab name={Database} key={Database} />
+          <CustomDatabaseTab
+            name={Database}
+            key={Database}
+            currentDatabaseSelected={currentDatabaseSelected}
+            handleSelectDatabase={handleSelectDatabase}
+          />
         ))}
       </Navbar.Section>
     </Navbar>
@@ -53,7 +75,7 @@ function SideLeftMenu(props: Props) {
 const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-    paddingBottom: 0,
+    paddingBottom: "1rem",
     position: 'relative',
   },
   header: {

@@ -38,6 +38,15 @@ class DatabaseService {
       throw e;
     }
   }
+
+  static async getTablesFromDatabase(database: string) {
+    try {
+      const response = await get(`/database/tables/${database}`);
+      return response.data;
+    } catch (e) {
+      throw e;
+    }
+  }
 }
 
 export default DatabaseService;

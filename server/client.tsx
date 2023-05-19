@@ -12,15 +12,12 @@ const renderApp = () => {
 
 // Define a function to check the backend status
 const checkBackendStatus = async () => {
-  console.log('checkBackendStatus');
   try {
     const response = await get('/health');
-    const res = typeof response === 'string' ? response as string : '';
-    console.log()
-    if (!res.includes('Error')) {
+    
+    if (typeof response === 'string' ? !(response as string).includes('Error') : true) {
       renderApp();
     } else {
-      console.log('Backend not ready yet');
       // If the response is not OK, try again after a delay
       setTimeout(checkBackendStatus, 500);
     }
