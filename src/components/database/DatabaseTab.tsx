@@ -21,47 +21,64 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
   const dispatch = useAppThunkDispatch();
   const animationDelay = 250;
   const [isSelect, setIsSelect] = useState(false);
+  const [isCurrent, setIsCurrent] = useState(false);
+  const [tables, setTables] = useState<string[]>([]);
 
   const currentDBInUse = useMemo(() => {
     return currentDatabaseSelected.find((item) => item.name === name);
   }, [currentDatabaseSelected]);
 
   useEffect(() => {
-    setIsSelect(currentDBInUse ? true : false);
-  }, [currentDatabaseSelected]);
+    setIsSelect(
+      currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED ||
+        currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT
+        ? true
+        : false,
+    );
+    setIsCurrent(currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT ? true : false);
+  }, [currentDatabaseSelected, currentDBInUse]);
+
+  const getTablesIfNeeded = async () => {
+    if (!tables.length) {
+      const res = await dispatch(getTablesFromDatabase(name));
+      setTables(res.payload);
+    }
+  };
+
+  useEffect(() => {
+    if (tables.length > 0) {
+      // Do something after tables state has been updated
+      handleSelectDatabase({ name, isSelected: ECurrentDatabaseSelected.SELECTED, tables });
+    }
+  }, [tables]); // Depend on tables state, so this useEffect will run every time tables state changes
 
   const handleSingleClick = async () => {
-    let tables: string[] = [];
-    if (!isSelect) {
-      const res = await dispatch(getTablesFromDatabase(name));
-      tables = res.payload;
-    }
-    handleSelectDatabase({ name, isSelected: ECurrentDatabaseSelected.SELECTED, tables });
+    await getTablesIfNeeded();
+    handleSelectDatabase({
+      name,
+      isSelected: isSelect ? ECurrentDatabaseSelected.NOT_SELECTED : ECurrentDatabaseSelected.SELECTED,
+      tables,
+    });
   };
 
   const handleDoubleClick = async () => {
-    console.log('double click');
-    let tables: string[] = [];
-    if (!isSelect) {
-      const res = await dispatch(getTablesFromDatabase(name));
-      tables = res.payload;
+    await getTablesIfNeeded();
+    if (currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED) {
+      //find the current selected database and set it to SELECTED_AND_CURRENT
+      currentDBInUse.isSelected = ECurrentDatabaseSelected.SELECTED_AND_CURRENT;
+      console.log('handleDoubleClick', currentDBInUse);
     }
-
-    if (currentDatabaseSelected.includes(currentDBInUse)) {
-      handleSelectDatabase({ name, isSelected: ECurrentDatabaseSelected.SELECTED_AND_CURRENT, tables });
-    }
-
-    handleSelectDatabase({ name, isSelected: ECurrentDatabaseSelected.SELECTED_AND_CURRENT, tables });
+    handleSelectDatabase({
+      name,
+      isSelected: !isCurrent ? ECurrentDatabaseSelected.SELECTED_AND_CURRENT : ECurrentDatabaseSelected.SELECTED,
+      tables,
+    });
   };
 
   const handleClick = useClickDetector({
     singleClickCallback: handleSingleClick,
     doubleClickCallback: handleDoubleClick,
   });
-
-  useEffect(() => {
-    console.log('currentDBInUse', currentDBInUse);
-  }, [currentDBInUse]);
 
   return (
     <Flex
@@ -79,7 +96,9 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
         style={{
           flexDirection: 'row',
         }}>
-        <TbDatabase size={20} color='#D0CECB' />
+        <TbDatabase size={15} color='#D0CECB' style={{
+          alignSelf: 'center',
+        }}/>
         <Flex align='center' justify='space-between' w='100%'>
           <Text
             style={{
@@ -89,11 +108,11 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
             }}>
             {name}
           </Text>
-          {isSelect && (
+          {/* {isSelect && (
             <Box pr='md'>
               <AnimatedBubbleText text='SQLNest' delay={animationDelay} />
             </Box>
-          )}
+          )} */}
         </Flex>
       </Flex>
       {isSelect && (

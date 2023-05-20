@@ -20,12 +20,11 @@ function SideLeftMenu(props: Props) {
   const [currentDatabaseSelected, setCurrentDatabaseSelected] = useState<Partial<ICurrentDatabaseSelected>[]>([]);
 
   const handleSelectDatabase = async (info: ICurrentDatabaseSelected) => {
-
     const isAlreadySelected = currentDatabaseSelected.find((item) => item.name === info.name);
     if (!isAlreadySelected) {
       setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
     } else {
-      if(info.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT) {
+      if (info.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT) {
         setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
       } else {
         setCurrentDatabaseSelected(currentDatabaseSelected.filter((item) => item.name !== info.name));
@@ -58,7 +57,7 @@ function SideLeftMenu(props: Props) {
         </Group>
       </Navbar.Section>
 
-      <Navbar.Section pl='md' pr='md' sx={{ overflowY: 'auto', flex: 1, marginTop: 10 }}>
+      <Navbar.Section pl='md' pr='md' sx={{ overflowY: 'auto', flex: 1, marginTop: 10, paddingBottom: '1rem' }}>
         {databases?.map(({ Database }) => (
           <CustomDatabaseTab
             name={Database}
@@ -75,7 +74,6 @@ function SideLeftMenu(props: Props) {
 const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
-    paddingBottom: "1rem",
     position: 'relative',
   },
   header: {
