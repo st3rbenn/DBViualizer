@@ -26,7 +26,7 @@ const tabs: ITabs[] = [
 
 function App() {
   const { classes } = useStyles();
-  const [navbarWidth, setNavbarWidth] = useState(300);
+  const [navbarWidth, setNavbarWidth] = useState(400);
 
   return (
     <Paper

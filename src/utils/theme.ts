@@ -44,6 +44,7 @@ const theme: Partial<MantineTheme> = {
       },
     },
   },
+  loader: 'dots'
 };
 
 export default theme;

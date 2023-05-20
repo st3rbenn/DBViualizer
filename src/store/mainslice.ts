@@ -17,6 +17,7 @@ type PartialRootState = {
 
 const initialState: PartialRootState = {
   databases: [],
+  tables: [],
   currentDatabase: null,
   loadingDatabaseConnection: false,
   loadingDatabases: false,
@@ -35,6 +36,10 @@ export const useDatabase = createAsyncThunk('root/useDatabase', async (database:
   console.log('database', database)
   return await DatabaseService.useDatabase(database)
 })
+
+export const getTablesFromDatabase = createAsyncThunk('root/getTablesFromDatabase', async (database: string) => {
+  return await DatabaseService.getTablesFromDatabase(database);
+});
 
 export const mainSlice = createSlice({
   name: 'root',
@@ -66,11 +71,21 @@ export const mainSlice = createSlice({
       })
       .addCase(useDatabase.fulfilled, (state, action) => {
         state.loadingSingleDatabase = false;
-        console.log('action', action)
         state.currentDatabase = action.payload.data.DBName;
         state.tables = action.payload.data.DBTable;
       })
       .addCase(useDatabase.rejected, (state) => {
+        state.loadingSingleDatabase = false;
+      })
+      .addCase(getTablesFromDatabase.pending, (state) => {
+        state.tables = [];
+        state.loadingSingleDatabase = true;
+      })
+      .addCase(getTablesFromDatabase.fulfilled, (state, action) => {
+        state.loadingSingleDatabase = false;
+        state.tables = action.payload;
+      })
+      .addCase(getTablesFromDatabase.rejected, (state) => {
         state.loadingSingleDatabase = false;
       })
   },

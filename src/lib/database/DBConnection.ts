@@ -137,11 +137,12 @@ export class DBConnection {
 
   public async connectToMySQL(): Promise<void> {
     try {
-      console.log('Connecting to database... 😴');
+      console.log('Connecting to MySQL... 😴');
       if (!DBConnection.pool) {
         throw new Error('Pool is not initialized');
       }
       DBConnection.connection = await DBConnection.pool.getConnection();
+      console.log('Connected to MySQL ✅');
     } catch (e) {
       console.log('Something went wrong while connecting to database', e);
     }
@@ -181,16 +182,22 @@ export class DBConnection {
     return await DBConnection.executeQuery('SHOW DATABASES;');
   }
 
-  public async getAllTablesFromDatabase(): Promise<string[]> {
-    if (!DBConnection.connection) {
-      throw new Error('Connection is not established');
-    }
+  public async getAllTablesFromDatabase(database?: string): Promise<string[]> {
+    try {
+      if (!DBConnection.connection) {
+        throw new Error('Connection is not established');
+      }
 
-    if (!DBConnection.currentDatabase) {
-      throw new Error('Database is not selected');
-    }
+      const rows = await DBConnection.executeQuery(`SHOW TABLES FROM ${database || DBConnection.currentDatabase};`);
+      let tables: string[] = [];
 
-    return await DBConnection.executeQuery(`SHOW TABLES FROM ${DBConnection.currentDatabase};`);
+      for (const table of rows) {
+        tables.push(table[('Tables_in_' + database) as keyof typeof table] as string);
+      }
+      return tables;
+    } catch (e) {
+      console.log('error', e);
+    }
   }
 
   public static checkIfInstanceExists(): boolean {

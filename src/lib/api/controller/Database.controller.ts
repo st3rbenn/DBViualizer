@@ -67,7 +67,9 @@ export const getTablesFromDatabase = async (req: Request, res: Response) => {
 
     const { database } = req.params;
 
-    const result = await dbInstance.getAllTablesFromDatabase();
+    console.log('database 1', database)
+
+    const result = await dbInstance.getAllTablesFromDatabase(database);
 
     return res.status(200).json({
       message: 'Retrieved all tables ✅',
@@ -160,15 +162,9 @@ export const useDatabase = async (req: Request, res: Response) => {
 
     const DBTable = await dbInstance.getAllTablesFromDatabase();
 
-    let tables: string[] = [];
-
-    for (const table of DBTable) {
-      tables.push(table[('Tables_in_' + database) as keyof typeof table] as string);
-    }
-
     const data = {
       DBName: database,
-      DBTable: tables,
+      DBTable,
     };
 
     return res.status(200).json({
