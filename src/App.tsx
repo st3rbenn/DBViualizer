@@ -39,8 +39,8 @@ function App() {
       <Flex direction='column' style={{ width: '100%', height: '100%', position: 'relative', zIndex: 100 }}>
         <Header tabs={tabs} />
         <Routes>
-          <Route path='/' element={<Flex>Home</Flex>} index />
-          <Route path='information' element={<InformationView />} />
+          <Route path='/' element={<Flex>Home</Flex>} />
+          <Route path='information' element={<InformationView />} index />
         </Routes>
       </Flex>
     </Paper>

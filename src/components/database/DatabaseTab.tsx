@@ -1,13 +1,11 @@
 import { Box, Divider, Flex, Grid, Text, createStyles } from '@mantine/core';
-import React, { useEffect, useMemo, useState } from 'react';
-import { TbDatabase, TbTable } from 'react-icons/tb';
-import { RootState, useAppThunkDispatch } from '../../store';
+import React, { MouseEvent, MouseEventHandler, useMemo, useState } from 'react';
+import { TbDatabase } from 'react-icons/tb';
+import { useAppThunkDispatch } from '../../store';
 import { getTablesFromDatabase, useDatabase } from '../../store/mainslice';
-import { useSelector } from 'react-redux';
 import Table from './Table';
 import { ECurrentDatabaseSelected, ICurrentDatabaseSelected } from '../interface/Common.interface';
-import useClickDetector from '../../hook/useClickAndDoubleClick';
-import AnimatedBubbleText from '../animation/AnimatedBubbleText';
+import { MdKeyboardArrowRight, MdKeyboardArrowDown } from 'react-icons/md';
 
 type CustomDatabaseTabProps = {
   name: string;
@@ -19,71 +17,61 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
   const { name, handleSelectDatabase, currentDatabaseSelected } = props;
   const { classes } = useStyles();
   const dispatch = useAppThunkDispatch();
-  const animationDelay = 250;
   const [isSelect, setIsSelect] = useState(false);
-  const [isCurrent, setIsCurrent] = useState(false);
   const [tables, setTables] = useState<string[]>([]);
 
   const currentDBInUse = useMemo(() => {
     return currentDatabaseSelected.find((item) => item.name === name);
-  }, [currentDatabaseSelected]);
-
-  useEffect(() => {
-    setIsSelect(
-      currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED ||
-        currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT
-        ? true
-        : false,
-    );
-    setIsCurrent(currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT ? true : false);
-  }, [currentDatabaseSelected, currentDBInUse]);
+  }, [currentDatabaseSelected, name]);
 
   const getTablesIfNeeded = async () => {
-    if (!tables.length) {
-      const res = await dispatch(getTablesFromDatabase(name));
-      setTables(res.payload);
+    try {
+      if (!tables.length) {
+        const res = await dispatch(getTablesFromDatabase(name));
+        setTables(res.payload);
+        return res;
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  useEffect(() => {
-    if (tables.length > 0) {
-      // Do something after tables state has been updated
-      handleSelectDatabase({ name, isSelected: ECurrentDatabaseSelected.SELECTED, tables });
+  const handleClickSelectDatabase = async (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    try {
+      const allTables = await getTablesIfNeeded();
+      await dispatch(useDatabase(name))
+      handleSelectDatabase({
+        name,
+        isSelected: ECurrentDatabaseSelected.SELECTED_AND_CURRENT,
+        tables: allTables !== undefined ? allTables.payload : tables,
+      });
+      setIsSelect(true);
+    } catch (error) {
+      console.log(error);
     }
-  }, [tables]); // Depend on tables state, so this useEffect will run every time tables state changes
-
-  const handleSingleClick = async () => {
-    await getTablesIfNeeded();
-    handleSelectDatabase({
-      name,
-      isSelected: isSelect ? ECurrentDatabaseSelected.NOT_SELECTED : ECurrentDatabaseSelected.SELECTED,
-      tables,
-    });
   };
 
-  const handleDoubleClick = async () => {
-    await getTablesIfNeeded();
-    if (currentDBInUse?.isSelected === ECurrentDatabaseSelected.SELECTED) {
-      //find the current selected database and set it to SELECTED_AND_CURRENT
-      currentDBInUse.isSelected = ECurrentDatabaseSelected.SELECTED_AND_CURRENT;
-      console.log('handleDoubleClick', currentDBInUse);
+  const handleArrowClick = async (event: MouseEvent<HTMLDivElement>) => {
+    event.stopPropagation();
+    try {
+      const allTables = await getTablesIfNeeded();
+      handleSelectDatabase({
+        name,
+        isSelected: isSelect ? ECurrentDatabaseSelected.NOT_SELECTED : ECurrentDatabaseSelected.SELECTED,
+        tables: allTables !== undefined ? allTables.payload : tables,
+        isArrowClicked: true,
+      });
+      setIsSelect(!isSelect);
+    } catch (error) {
+      console.log(error);
     }
-    handleSelectDatabase({
-      name,
-      isSelected: !isCurrent ? ECurrentDatabaseSelected.SELECTED_AND_CURRENT : ECurrentDatabaseSelected.SELECTED,
-      tables,
-    });
   };
-
-  const handleClick = useClickDetector({
-    singleClickCallback: handleSingleClick,
-    doubleClickCallback: handleDoubleClick,
-  });
 
   return (
     <Flex
       className={classes.database}
-      onClick={handleClick}
+      onClick={handleClickSelectDatabase}
       style={{
         backgroundColor:
           currentDBInUse?.isSelected === ECurrentDatabaseSelected?.SELECTED
@@ -96,23 +84,22 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
         style={{
           flexDirection: 'row',
         }}>
-        <TbDatabase size={15} color='#D0CECB' style={{
-          alignSelf: 'center',
-        }}/>
+        <Box className={classes.expendArrowContainer} onClick={handleArrowClick}>
+          {isSelect ? (
+            <MdKeyboardArrowDown size={15} color='#D0CECB' />
+          ) : (
+            <MdKeyboardArrowRight size={15} color='#D0CECB' />
+          )}
+        </Box>
+        <TbDatabase
+          size={15}
+          color='#D0CECB'
+          style={{
+            alignSelf: 'center',
+          }}
+        />
         <Flex align='center' justify='space-between' w='100%'>
-          <Text
-            style={{
-              fontSize: 12,
-              color: '#D0CECB',
-              marginLeft: 10,
-            }}>
-            {name}
-          </Text>
-          {/* {isSelect && (
-            <Box pr='md'>
-              <AnimatedBubbleText text='SQLNest' delay={animationDelay} />
-            </Box>
-          )} */}
+          <Text className={classes.databaseName}>{name}</Text>
         </Flex>
       </Flex>
       {isSelect && (
@@ -126,12 +113,7 @@ const CustomDatabaseTab = (props: CustomDatabaseTabProps) => {
               marginLeft: 10,
             }}
           />
-          <Grid
-            sx={{
-              paddingBottom: '.3rem',
-              paddingTop: '.3rem',
-              userSelect: 'none',
-            }}>
+          <Grid className={classes.tableContainer}>
             {currentDBInUse?.tables?.map((table, _) => (
               <Table name={table} key={_} />
             ))}
@@ -149,7 +131,6 @@ const useStyles = createStyles((theme) => ({
     flexDirection: 'column',
     borderRadius: theme.radius.sm,
     fontSize: '.7rem',
-    paddingLeft: 10,
     paddingTop: '.3rem',
     paddingBottom: '.3rem',
     cursor: 'pointer',
@@ -164,11 +145,39 @@ const useStyles = createStyles((theme) => ({
     },
   },
 
+  databaseName: {
+    fontSize: 12,
+    color: '#D0CECB',
+    marginLeft: 10,
+  },
+
   currentDatabaseContainer: {
     flexDirection: 'row',
     paddingTop: 5,
     paddingBottom: 10,
+    paddingLeft: 21,
     width: 230,
+  },
+
+  tableContainer: {
+    paddingBottom: '.3rem',
+    paddingTop: '.3rem',
+    userSelect: 'none',
+  },
+
+  expendArrowContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 5,
+    marginLeft: 5,
+    borderRadius: theme.radius.sm,
+    position: 'relative',
+    zIndex: 1,
+
+    '&:hover': {
+      backgroundColor: theme.colors.dark[3],
+    },
   },
 }));
 
