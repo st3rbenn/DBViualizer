@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import CustomDatabaseTab from '../database/DatabaseTab';
 import { connect, retrieveAllDatabase } from '../../store/mainslice';
 import { ECurrentDatabaseSelected, ICurrentDatabaseSelected } from '../interface/Common.interface';
+import { Console } from 'console';
 
 type Props = {
   navbarWidth: number;
@@ -21,14 +22,25 @@ function SideLeftMenu(props: Props) {
 
   const handleSelectDatabase = async (info: ICurrentDatabaseSelected) => {
     const isAlreadySelected = currentDatabaseSelected.find((item) => item.name === info.name);
-    if (!isAlreadySelected) {
-      setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
-    } else {
-      if (info.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT) {
-        setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
-      } else {
-        setCurrentDatabaseSelected(currentDatabaseSelected.filter((item) => item.name !== info.name));
+    const alreadySelectedAndCurrentDatabase = currentDatabaseSelected.find(
+      (item) => item.isSelected === ECurrentDatabaseSelected.SELECTED_AND_CURRENT,
+    );
+    if (isAlreadySelected) {
+      if (!info.isArrowClicked) {
+        if (alreadySelectedAndCurrentDatabase !== undefined) {
+          alreadySelectedAndCurrentDatabase.isSelected = ECurrentDatabaseSelected.SELECTED;
+        }
       }
+      setCurrentDatabaseSelected(
+        currentDatabaseSelected.map((item) =>
+          item.name === info.name ? { ...item, isSelected: info.isSelected } : item,
+        ),
+      );
+    } else {
+      if (alreadySelectedAndCurrentDatabase !== undefined) {
+        alreadySelectedAndCurrentDatabase.isSelected = ECurrentDatabaseSelected.SELECTED;
+      }
+      setCurrentDatabaseSelected([...currentDatabaseSelected, { ...info }]);
     }
   };
 
@@ -75,6 +87,7 @@ const useStyles = createStyles((theme) => ({
   navbar: {
     backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
     position: 'relative',
+    paddingBottom: '1rem',
   },
   header: {
     color: theme.colorScheme === 'dark' ? theme.colors.dark[0] : theme.black,

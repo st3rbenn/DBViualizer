@@ -2,6 +2,7 @@ interface ICurrentDatabaseSelected {
   name: string;
   isSelected: ECurrentDatabaseSelected;
   tables: string[];
+  isArrowClicked?: boolean;
 }
 
 enum ECurrentDatabaseSelected {
